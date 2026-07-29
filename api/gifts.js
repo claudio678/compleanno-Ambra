@@ -1,5 +1,6 @@
-import { kv } from '@vercel/kv';
+import { Redis } from '@upstash/redis';
 
+const redis = Redis.fromEnv();
 const KEY = 'ambra-regali-lista-v1';
 
 const defaultItems = [
@@ -16,10 +17,10 @@ const defaultItems = [
 export default async function handler(req, res) {
   try {
     if (req.method === 'GET') {
-      let items = await kv.get(KEY);
+      let items = await redis.get(KEY);
       if (!items) {
         items = defaultItems;
-        await kv.set(KEY, items);
+        await redis.set(KEY, items);
       }
       return res.status(200).json({ items });
     }
@@ -30,7 +31,7 @@ export default async function handler(req, res) {
         return res.status(400).json({ error: 'id mancante' });
       }
 
-      let items = await kv.get(KEY);
+      let items = await redis.get(KEY);
       if (!items) items = defaultItems;
 
       const idx = items.findIndex((i) => i.id === id);
@@ -39,7 +40,7 @@ export default async function handler(req, res) {
       }
 
       items[idx] = { ...items[idx], reservedBy: reservedBy || null };
-      await kv.set(KEY, items);
+      await redis.set(KEY, items);
 
       return res.status(200).json({ items });
     }
