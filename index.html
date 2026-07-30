@@ -590,7 +590,7 @@
     const overlay = document.getElementById('map-lightbox');
     const srcImg = document.getElementById('mappa-img');
     const bigImg = document.getElementById('map-lightbox-img');
-    if (bigImg && srcImg && !bigImg.src) bigImg.src = srcImg.src;
+    if (bigImg && srcImg) bigImg.src = srcImg.src;
     if (overlay) overlay.classList.add('open');
   };
   window.closeMapLightbox = function() {
