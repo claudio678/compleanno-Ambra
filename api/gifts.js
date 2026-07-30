@@ -11,7 +11,10 @@ const defaultItems = [
   { id: 'g5', name: 'Caschetto ABUS Smiley 3.0', icon: '⛑️', link: 'https://www.amazon.it/ABUS-Casco-bambini-Smiley-3-0/dp/B09B2XL8XB', reservedBy: null },
   { id: 'g6', name: 'FABA Raccontastorie interattivo', icon: '🦊', link: 'https://www.amazon.it/FABA-Raccontastorie-interattivo-contenuti-Personaggio/dp/B0DCKF4BFW', reservedBy: null },
   { id: 'g7', name: 'Personaggio FABA — Musica Maestro', icon: '🎶', link: 'https://www.amazon.it/FABA-Personaggio-Sonoro-Musica-Maestro/dp/B092VMXB7G', reservedBy: null },
-  { id: 'g8', name: "Personaggio FABA — l'Elefante Ascoltabile", icon: '🐘', link: 'https://www.amazon.it/FABA-Personaggio-lElefante-Ascoltabile-Raccontastorie/dp/B0FH28X17H', reservedBy: null }
+  { id: 'g8', name: "Personaggio FABA — l'Elefante Ascoltabile", icon: '🐘', link: 'https://www.amazon.it/FABA-Personaggio-lElefante-Ascoltabile-Raccontastorie/dp/B0FH28X17H', reservedBy: null },
+  { id: 'g9', name: 'Seggiolino bici anteriore pieghevole', icon: '🚴', link: 'https://www.amazon.it/Seggiolino-anteriore-bicicletta-seggiolino-pieghevole/dp/B0GWTWZ7YD', reservedBy: null },
+  { id: 'g10', name: 'Gift Card Kiabi', icon: '🎁', link: 'https://www.kiabi.it/servizi/gift-card.html', reservedBy: null },
+  { id: 'g11', name: 'Sponda letto pieghevole FOPPAPEDRETTI', icon: '🛏️', link: 'https://www.amazon.it/FOPPAPEDRETTI-Fissaggio-Pieghevole-Trasportabile-Protettiva/dp/B01LZ2X6P5', reservedBy: null },
 ];
 
 // Correzioni forzate: se un link cambia in futuro, aggiornarlo qui.
@@ -20,6 +23,19 @@ const defaultItems = [
 const linkCorrections = {
   g1: 'https://amzn.eu/d/03sGrBSV'
 };
+
+function addMissingItems(items) {
+  let changed = false;
+  const existingIds = new Set(items.map((i) => i.id));
+  const merged = [...items];
+  for (const def of defaultItems) {
+    if (!existingIds.has(def.id)) {
+      merged.push(def);
+      changed = true;
+    }
+  }
+  return { items: merged, changed };
+}
 
 function applyCorrections(items) {
   let changed = false;
@@ -42,8 +58,12 @@ export default async function handler(req, res) {
         items = defaultItems;
         await redis.set(KEY, items);
       }
+      let changedAny = false;
+      const merged = addMissingItems(items);
+      if (merged.changed) { items = merged.items; changedAny = true; }
       const { items: fixedItems, changed } = applyCorrections(items);
-      if (changed) await redis.set(KEY, fixedItems);
+      if (changed) changedAny = true;
+      if (changedAny) await redis.set(KEY, fixedItems);
       return res.status(200).json({ items: fixedItems });
     }
 
@@ -55,6 +75,7 @@ export default async function handler(req, res) {
 
       let items = await redis.get(KEY);
       if (!items) items = defaultItems;
+      items = addMissingItems(items).items;
       ({ items } = applyCorrections(items));
 
       const idx = items.findIndex((i) => i.id === id);
