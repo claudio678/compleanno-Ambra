@@ -4,7 +4,7 @@ const redis = Redis.fromEnv();
 const KEY = 'ambra-regali-lista-v1';
 
 const defaultItems = [
-  { id: 'g1', name: 'Set costruzioni (120 pz, base-cestina)', icon: '🧱', link: 'https://www.amazon.it/s?k=costruzione+unico+base-cestina+120pz+8502&crid=VIPRICSH619W&sprefix=costruzione+unico+base%2Caps%2C237&ref=nb_sb_ss_mvt-t11-ranker_1_22', reservedBy: null },
+  { id: 'g1', name: 'Set costruzioni (120 pz, base-cestina)', icon: '🧱', link: 'https://amzn.eu/d/03sGrBSV', reservedBy: null },
   { id: 'g2', name: 'Xilofono / Metallofono per bimbi', icon: '🎵', link: 'https://www.amazon.it/Strumenti-Metallofono-Glockenspiel-Professionale-Giocattoli/dp/B09QCG8LNL', reservedBy: null },
   { id: 'g3', name: 'Set gioco pulizia (aspirapolvere giocattolo)', icon: '🧹', link: 'https://www.amazon.it/Dreamon-Aspirapolvere-aspirazione-funzione-giocattolo/dp/B0F17K1YGJ', reservedBy: null },
   { id: 'g4', name: 'Bicicletta prima infanzia senza pedali', icon: '🚲', link: 'https://www.amazon.it/MHCYLION-Bicicletta-Regolabili-Bloccasterzo-Giocattoli/dp/B0BWHSZV5N', reservedBy: null },
@@ -14,6 +14,26 @@ const defaultItems = [
   { id: 'g8', name: "Personaggio FABA — l'Elefante Ascoltabile", icon: '🐘', link: 'https://www.amazon.it/FABA-Personaggio-lElefante-Ascoltabile-Raccontastorie/dp/B0FH28X17H', reservedBy: null }
 ];
 
+// Correzioni forzate: se un link cambia in futuro, aggiornarlo qui.
+// Questo garantisce che i dati già salvati su Redis vengano corretti
+// automaticamente, senza dover cancellare manualmente la chiave.
+const linkCorrections = {
+  g1: 'https://amzn.eu/d/03sGrBSV'
+};
+
+function applyCorrections(items) {
+  let changed = false;
+  const fixed = items.map((item) => {
+    const correctLink = linkCorrections[item.id];
+    if (correctLink && item.link !== correctLink) {
+      changed = true;
+      return { ...item, link: correctLink };
+    }
+    return item;
+  });
+  return { items: fixed, changed };
+}
+
 export default async function handler(req, res) {
   try {
     if (req.method === 'GET') {
@@ -22,7 +42,9 @@ export default async function handler(req, res) {
         items = defaultItems;
         await redis.set(KEY, items);
       }
-      return res.status(200).json({ items });
+      const { items: fixedItems, changed } = applyCorrections(items);
+      if (changed) await redis.set(KEY, fixedItems);
+      return res.status(200).json({ items: fixedItems });
     }
 
     if (req.method === 'POST') {
@@ -33,6 +55,7 @@ export default async function handler(req, res) {
 
       let items = await redis.get(KEY);
       if (!items) items = defaultItems;
+      ({ items } = applyCorrections(items));
 
       const idx = items.findIndex((i) => i.id === id);
       if (idx === -1) {
