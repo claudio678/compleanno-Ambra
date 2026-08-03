@@ -8,7 +8,7 @@ const defaultItems = [
   { id: 'g2', name: 'Xilofono / Metallofono per bimbi', icon: '🎵', link: 'https://www.amazon.it/Strumenti-Metallofono-Glockenspiel-Professionale-Giocattoli/dp/B09QCG8LNL', reservedBy: null },
   { id: 'g3', name: 'Set gioco pulizia (aspirapolvere giocattolo)', icon: '🧹', link: 'https://www.amazon.it/Dreamon-Aspirapolvere-aspirazione-funzione-giocattolo/dp/B0F17K1YGJ', reservedBy: null },
   { id: 'g4', name: 'Bicicletta prima infanzia senza pedali', icon: '🚲', link: 'https://www.amazon.it/MHCYLION-Bicicletta-Regolabili-Bloccasterzo-Giocattoli/dp/B0BWHSZV5N', reservedBy: null },
-  { id: 'g5', name: 'Caschetto ABUS Smiley 3.0', icon: '⛑️', link: 'https://www.amazon.it/ABUS-Casco-bambini-Smiley-3-0/dp/B09B2XL8XB', reservedBy: null },
+  { id: 'g5', name: 'Caschetto ABUS Smiley 3.0', icon: '⛑️', link: 'https://www.amazon.it/ABUS-Casco-bambini-Smiley-3-0/dp/B09B2TKH2T', reservedBy: null },
   { id: 'g6', name: 'FABA Raccontastorie interattivo', icon: '🦊', link: 'https://www.amazon.it/FABA-Raccontastorie-interattivo-contenuti-Personaggio/dp/B0DCKF4BFW', reservedBy: null },
   { id: 'g7', name: 'Personaggio FABA — Musica Maestro', icon: '🎶', link: 'https://www.amazon.it/FABA-Personaggio-Sonoro-Musica-Maestro/dp/B092VMXB7G', reservedBy: null },
   { id: 'g8', name: "Personaggio FABA — l'Elefante Ascoltabile", icon: '🐘', link: 'https://www.amazon.it/FABA-Personaggio-lElefante-Ascoltabile-Raccontastorie/dp/B0FH28X17H', reservedBy: null },
@@ -29,7 +29,8 @@ const defaultItems = [
 // Questo garantisce che i dati già salvati su Redis vengano corretti
 // automaticamente, senza dover cancellare manualmente la chiave.
 const linkCorrections = {
-  g1: 'https://amzn.eu/d/03sGrBSV'
+  g1: 'https://amzn.eu/d/03sGrBSV',
+  g5: 'https://www.amazon.it/ABUS-Casco-bambini-Smiley-3-0/dp/B09B2TKH2T'
 };
 
 // Regali il cui schema è cambiato (aggiunto 'type', 'modalTitle', ecc.):
