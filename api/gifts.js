@@ -13,8 +13,16 @@ const defaultItems = [
   { id: 'g7', name: 'Personaggio FABA — Musica Maestro', icon: '🎶', link: 'https://www.amazon.it/FABA-Personaggio-Sonoro-Musica-Maestro/dp/B092VMXB7G', reservedBy: null },
   { id: 'g8', name: "Personaggio FABA — l'Elefante Ascoltabile", icon: '🐘', link: 'https://www.amazon.it/FABA-Personaggio-lElefante-Ascoltabile-Raccontastorie/dp/B0FH28X17H', reservedBy: null },
   { id: 'g9', name: 'Seggiolino bici anteriore pieghevole', icon: '🚴', link: 'https://www.amazon.it/Seggiolino-anteriore-bicicletta-seggiolino-pieghevole/dp/B0GWTWZ7YD', reservedBy: null },
-  { id: 'g10', name: 'Gift Card Kiabi', icon: '🎁', link: 'https://www.kiabi.it/servizi/gift-card.html', reservedBy: null },
+  { id: 'g10', name: 'Gift Card Kiabi', icon: '🎁', link: 'https://www.kiabi.it/servizi/gift-card.html', type: 'link', reservedBy: null },
   { id: 'g11', name: 'Sponda letto pieghevole FOPPAPEDRETTI', icon: '🛏️', link: 'https://www.amazon.it/FOPPAPEDRETTI-Fissaggio-Pieghevole-Trasportabile-Protettiva/dp/B01LZ2X6P5', reservedBy: null },
+  { id: 'g12', name: 'Corso nuoto Ambra', icon: '🏊', type: 'info',
+    modalTitle: 'Corso nuoto Ambra annuale',
+    modalText: 'Grazie per il tuo regalo, raccoglieremo la quota che desideri mettere e la destineremo a questa fantastica esperienza per Ambra!',
+    payments: [
+      { label: 'Revolut', value: '@claudife9o' },
+      { label: 'Bpay', value: '3347777829' }
+    ],
+    reservedBy: null },
 ];
 
 // Correzioni forzate: se un link cambia in futuro, aggiornarlo qui.
@@ -23,6 +31,28 @@ const defaultItems = [
 const linkCorrections = {
   g1: 'https://amzn.eu/d/03sGrBSV'
 };
+
+// Regali il cui schema è cambiato (aggiunto 'type', 'modalTitle', ecc.):
+// per questi id risincronizziamo tutti i campi dal default, preservando
+// solo l'eventuale prenotazione già presente.
+const idsToResync = ['g10', 'g12'];
+
+function resyncSchemas(items) {
+  let changed = false;
+  const byId = Object.fromEntries(defaultItems.map((d) => [d.id, d]));
+  const fixed = items.map((item) => {
+    if (idsToResync.includes(item.id) && byId[item.id]) {
+      const def = byId[item.id];
+      const needsSync = def.type !== item.type || (def.link && def.link !== item.link);
+      if (needsSync) {
+        changed = true;
+        return { ...def, reservedBy: item.reservedBy ?? null };
+      }
+    }
+    return item;
+  });
+  return { items: fixed, changed };
+}
 
 function addMissingItems(items) {
   let changed = false;
@@ -61,6 +91,8 @@ export default async function handler(req, res) {
       let changedAny = false;
       const merged = addMissingItems(items);
       if (merged.changed) { items = merged.items; changedAny = true; }
+      const resynced = resyncSchemas(items);
+      if (resynced.changed) { items = resynced.items; changedAny = true; }
       const { items: fixedItems, changed } = applyCorrections(items);
       if (changed) changedAny = true;
       if (changedAny) await redis.set(KEY, fixedItems);
@@ -76,6 +108,7 @@ export default async function handler(req, res) {
       let items = await redis.get(KEY);
       if (!items) items = defaultItems;
       items = addMissingItems(items).items;
+      items = resyncSchemas(items).items;
       ({ items } = applyCorrections(items));
 
       const idx = items.findIndex((i) => i.id === id);
