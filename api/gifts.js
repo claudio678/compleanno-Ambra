@@ -12,7 +12,7 @@ const defaultItems = [
   { id: 'g6', name: 'FABA Raccontastorie interattivo', icon: '🦊', link: 'https://www.amazon.it/FABA-Raccontastorie-interattivo-contenuti-Personaggio/dp/B0DCKF4BFW', reservedBy: null },
   { id: 'g7', name: 'Personaggio FABA — Musica Maestro', icon: '🎶', link: 'https://www.amazon.it/FABA-Personaggio-Sonoro-Musica-Maestro/dp/B092VMXB7G', reservedBy: null },
   { id: 'g8', name: "Personaggio FABA — l'Elefante Ascoltabile", icon: '🐘', link: 'https://www.amazon.it/FABA-Personaggio-lElefante-Ascoltabile-Raccontastorie/dp/B0FH28X17H', reservedBy: null },
-  { id: 'g9', name: 'Seggiolino bici anteriore pieghevole', icon: '🚴', link: 'https://www.amazon.it/Seggiolino-anteriore-bicicletta-seggiolino-pieghevole/dp/B0GWTWZ7YD', reservedBy: null },
+  { id: 'g9', name: 'Seggiolino bici anteriore pieghevole', icon: '🚴', link: 'https://www.amazon.it/dp/B0FX2G7G5P', reservedBy: null },
   { id: 'g10', name: 'Gift Card Kiabi', icon: '🎁', link: 'https://www.kiabi.it/servizi/gift-card.html', type: 'link', reservedBy: null },
   { id: 'g11', name: 'Sponda letto pieghevole FOPPAPEDRETTI', icon: '🛏️', link: 'https://www.amazon.it/FOPPAPEDRETTI-Fissaggio-Pieghevole-Trasportabile-Protettiva/dp/B01LZ2X6P5', reservedBy: null },
   { id: 'g12', name: 'Corso nuoto Ambra', icon: '🏊', type: 'info',
@@ -30,7 +30,8 @@ const defaultItems = [
 // automaticamente, senza dover cancellare manualmente la chiave.
 const linkCorrections = {
   g1: 'https://amzn.eu/d/03sGrBSV',
-  g5: 'https://www.amazon.it/ABUS-Casco-bambini-Smiley-3-0/dp/B09B2TKH2T'
+  g5: 'https://www.amazon.it/ABUS-Casco-bambini-Smiley-3-0/dp/B09B2TKH2T',
+  g9: 'https://www.amazon.it/dp/B0FX2G7G5P'
 };
 
 // Regali il cui schema è cambiato (aggiunto 'type', 'modalTitle', ecc.):
