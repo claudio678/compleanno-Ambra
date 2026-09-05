@@ -23,6 +23,7 @@ const defaultItems = [
       { label: 'Bpay', value: '3347777829' }
     ],
     reservedBy: null },
+  { id: 'g13', name: 'Cancelletto scale', icon: '🚧', link: 'https://amzn.eu/d/0j5IGW39', reservedBy: null },
 ];
 
 // Correzioni forzate: se un link cambia in futuro, aggiornarlo qui.
